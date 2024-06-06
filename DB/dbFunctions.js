@@ -1,4 +1,5 @@
 const pool = require('./db');
+const generateUserId = require('../helperFunctions');
 
 const getUsers = (req, res) => {
     pool.query('SELECT * FROM users', (error, results) => {
@@ -28,9 +29,10 @@ const findByEmail = async (email) => {
 }
 
 const createUser = async (req, res) => {
-    const { id, password, email, firstname, lastname } = req.body;
+    const { password, email, firstname, lastname } = req.body;
     const existingUser = await findByEmail(email);
     if (existingUser == null) {
+        const id = generateUserId();
         pool.query(
             'INSERT INTO users (id, password, email, firstname, lastname, created_at, modified_at) VALUES ($1, $2, $3, $4, $5, current_timestamp, current_timestamp)',
             [id, password, email, firstname, lastname], (error, results) => {
