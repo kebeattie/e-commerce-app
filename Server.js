@@ -9,6 +9,9 @@ const checkoutRouter = require('./Routes/checkout');
 const cartRouter = require('./Routes/cart');
 const loginRouter = require('./Routes/login');
 const registrationRouter = require('./Routes/registration');
+const session = require('express-session');
+const passport = require('passport');
+const localStrategy = require("./local-strategy");
 const port = process.env.port || 4001;
 
 app.use(bodyParser.json());
@@ -18,6 +21,21 @@ app.use (
     })
 );
 app.use(cors());
+
+app.use(
+    session({
+        secret: 'placeholder',
+        saveUninitialized: false,
+        resave: false,
+        cookie: {
+            maxAge: 600000 * 60
+        }
+    })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 //Configure Router
 app.use('/users', userRouter);
 app.use('/products', productsRouter);
