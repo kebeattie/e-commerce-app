@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const db = require('./db');
+const userRouter = require('./Routes/user')
 const port = process.env.port || 4001;
 
 app.use(bodyParser.json());
@@ -10,13 +10,16 @@ app.use (
         extended: true
     })
 );
+app.use('/users', userRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello World');
 });
 
-app.get('/users', db.getUsers);
+
 
 app.listen(port, () => {
     console.log(`App is listening on port ${port}`);
 })
+
+module.exports = {app};
