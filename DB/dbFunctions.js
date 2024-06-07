@@ -181,4 +181,45 @@ const deleteFromCart = async (id) => {
         [id])
 }
 
-module.exports = { getUsers, createUser, findByEmail, changePassword, getProducts, getProductsByCategory, getCart, addToCart, deleteFromCart };
+//Save order items to db
+const saveOrderItems = async (id, orderId, quantity, price, product_id) => {
+    await pool.query('INSERT INTO order_item VALUES($1, $2, $3, $4, $5)', 
+        [id, orderId, quantity, price, product_id]
+    )
+};
+
+//Checkout and create an order
+const checkout = async(email) => {
+    const orderId = generateUserId();
+    const user = await findByEmail(email);
+    let total = 0;
+    if(user) {
+        cartId = user.cart_id;
+        const cart = await pool.query(
+        'SELECT * FROM cart_item WHERE cart_id = $1',
+        [cartId])
+
+    await pool.query('INSERT INTO orders(id, user_id, created_at, modified_at) VALUES ($1, $2, current_timestamp, current_timestamp)',
+        [orderId, user.id]);
+
+    cart.rows.forEach((element) => {
+        let orderItemId = generateUserId();
+        let productId = element.product_id;
+        let quantity = element.quantity;
+        let price = element.price;
+        total += Number(price.replace(/[^0-9.-]+/g,""));
+        saveOrderItems(orderItemId, orderId, quantity, price, productId);
+    })
+
+    await pool.query('UPDATE orders SET total = $1, status = $2 WHERE id = $3',
+        [total, 'Confirmed', orderId ]
+    )
+    } 
+    
+    
+    
+
+
+
+}
+module.exports = { getUsers, createUser, findByEmail, changePassword, getProducts, getProductsByCategory, getCart, addToCart, deleteFromCart, checkout };

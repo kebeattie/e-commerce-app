@@ -28,4 +28,14 @@ cartRouter.post('/deleteFromCart/:id', async (req, res, next) => {
     }
 })
 
+cartRouter.post('/checkout', async(req, res, next) => {
+    const { email } = req.body;
+    try {
+        db.checkout(email);
+        res.send('Order confirmed');
+    } catch(error){
+        res.send(error);
+    }
+})
+
 module.exports =  cartRouter;
