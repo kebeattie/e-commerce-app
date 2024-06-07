@@ -1,5 +1,6 @@
 const pool = require('./db');
 const generateUserId = require('../helperFunctions');
+const bCrypt = require ('bcrypt');
 
 const getUsers = (req, res) => {
     pool.query('SELECT * FROM users', (error, results) => {
@@ -32,10 +33,12 @@ const createUser = async (req, res) => {
     const { password, email, firstname, lastname } = req.body;
     const existingUser = await findByEmail(email);
     if (existingUser == null) {
+        const salt = await bCrypt.genSalt(10);
+        const hashedPassword = await bCrypt.hash(password, salt);
         const id = generateUserId();
         pool.query(
             'INSERT INTO users (id, password, email, firstname, lastname, created_at, modified_at) VALUES ($1, $2, $3, $4, $5, current_timestamp, current_timestamp)',
-            [id, password, email, firstname, lastname], (error, results) => {
+            [id, hashedPassword, email, firstname, lastname], (error, results) => {
                 if (error) {
                     console.log(error);
                 }
