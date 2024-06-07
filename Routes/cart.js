@@ -8,17 +8,24 @@ cartRouter.post('/addToCart/:id', async (req, res, next) => {
     const {id} = req.params;
     const {quantity, email} = req.body;
     try {
-        
-        const result = await db.addToCart(id, quantity, email);
-        if(result === null) {res.send('Product not found or it is already in your cart')}
-        else {
-            console.log(`Item of id ${id} added to cart`);
+        await db.addToCart(id, quantity, email);
+        console.log(`Item of id ${id} added to cart`);
         res.send('item added');
-        }
         
     } catch(err) {
-        res.redirect('/');
+        res.send('Product not found or it is already in your cart')
+
     }
 });
+
+cartRouter.post('/deleteFromCart/:id', async (req, res, next) => {
+    const {id} = req.params;
+    try {
+        await db.deleteFromCart(id);
+        res.send('Item deleted')
+    } catch(err) {
+        res.send('Error');
+    }
+})
 
 module.exports =  cartRouter;

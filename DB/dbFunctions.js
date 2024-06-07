@@ -162,10 +162,6 @@ const addToCart = async (id, quantity, email) => {
     const productId = product.id;
     const price = product.price;
 
-    
-
-    
-    
     await pool.query(
         'INSERT INTO cart_item VALUES ($1, $2, $3, $4, $5)', 
         [cartItemId, productId, quantity, cartId, price], (error, results) => {
@@ -176,7 +172,13 @@ const addToCart = async (id, quantity, email) => {
         }
     )
 
-    
 }
 
-module.exports = { getUsers, createUser, findByEmail, changePassword, getProducts, getProductsByCategory, getCart, addToCart };
+//Delete item from cart
+const deleteFromCart = async (id) => {
+    await pool.query(
+        'DELETE FROM cart_item WHERE id = $1',
+        [id])
+}
+
+module.exports = { getUsers, createUser, findByEmail, changePassword, getProducts, getProductsByCategory, getCart, addToCart, deleteFromCart };
