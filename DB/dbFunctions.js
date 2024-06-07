@@ -1,7 +1,15 @@
 const pool = require('./db');
 const generateUserId = require('../helperFunctions');
-const bCrypt = require ('bcrypt');
+const bCrypt = require('bcrypt');
 
+//Generate a salt to be added to our hashed passwords 
+const getSalt = async () => {
+    return await bCrypt.genSalt(10);
+}
+
+const salt = getSalt();
+
+//Return all users and their information
 const getUsers = (req, res) => {
     pool.query('SELECT * FROM users', (error, results) => {
         if (error) {
@@ -12,29 +20,36 @@ const getUsers = (req, res) => {
 
 }
 
+
+//Return a specific user by their email
 const findByEmail = async (email) => {
 
-    try{
-       const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    try {
+        const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
 
-       if(result.rows?.length) {
-        return result.rows[0];
-       } else {
-        return null;
-       }
+        if (result.rows?.length) {
+            return result.rows[0];
+        } else {
+            return null;
+        }
     } catch (error) {
         console.log(error);
     }
-  
+
 
 }
 
+//Create a new user and store them in the DB
 const createUser = async (req, res) => {
+
     const { password, email, firstname, lastname } = req.body;
     const existingUser = await findByEmail(email);
     if (existingUser == null) {
-        const salt = await bCrypt.genSalt(10);
-        const hashedPassword = await bCrypt.hash(password, salt);
+
+        //Salt and hash passwords so they are safe
+        
+        const hashedPassword = await bCrypt.hash(password, await salt);
+
         const id = generateUserId();
         pool.query(
             'INSERT INTO users (id, password, email, firstname, lastname, created_at, modified_at) VALUES ($1, $2, $3, $4, $5, current_timestamp, current_timestamp)',
@@ -50,4 +65,32 @@ const createUser = async (req, res) => {
 
 };
 
-module.exports = { getUsers, createUser, findByEmail };
+//Allow a user to update their password
+
+const changePassword = async (email, newPassword) => {
+
+    //Grab new password from request body then hash and salt
+    const existingUser = await findByEmail(email);
+
+    if (existingUser) {
+        const hashedNewPassword = await bCrypt.hash(newPassword, await salt);
+        pool.query(
+            'UPDATE users SET password=$1, modified_at=current_timestamp WHERE email=$2',
+            [hashedNewPassword, email], (error, results) => {
+                if (error) {
+                    console.log(error);
+                    return(null)
+                }
+                
+            }
+
+        )
+        return(newPassword);
+    } else {
+        return(null);
+    }
+
+
+}
+
+module.exports = { getUsers, createUser, findByEmail, changePassword };

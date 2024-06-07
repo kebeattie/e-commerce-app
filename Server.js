@@ -23,6 +23,7 @@ app.use (
 );
 app.use(cors());
 
+//Initialize session
 app.use(
     session({
         secret: 'placeholder',
