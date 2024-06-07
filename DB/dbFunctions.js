@@ -227,11 +227,12 @@ const getOrders = async (req, res) => {
     if (user) {
         userId = user.id
 
-        await pool.query('SELECT * FROM ORDERS WHERE user_id = $1',
+        await pool.query('SELECT * FROM orders WHERE user_id = $1',
             [user.id], (error, results) => {
                 if (error) {
-                    res.send(error)
+                    res.send('error')
                 }
+                if (!results.row)
                 res.send(results.rows);
             })
     } else {
@@ -241,6 +242,24 @@ const getOrders = async (req, res) => {
 
 };
 
+//Get order by id
+const getOrderById = async (req, res) => {
+    const { id } = req.body;
+    if (id) {
+        await pool.query('SELECT * FROM orders WHERE id = $1',
+            [id], (error, results) => {
+                if(error) {
+                    res.send(error)
+                }
+                if (results.rows.length < 1) {
+                    res.send('Order not found');
+                }
+                res.send(results.rows[0]);
+            }
+        )
+    }
+}
 
 
-module.exports = { getUsers, createUser, findByEmail, changePassword, getProducts, getProductsByCategory, getCart, addToCart, deleteFromCart, checkout, getOrders };
+
+module.exports = { getUsers, createUser, findByEmail, changePassword, getProducts, getProductsByCategory, getCart, addToCart, deleteFromCart, checkout, getOrders, getOrderById };
