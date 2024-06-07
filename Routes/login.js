@@ -9,4 +9,6 @@ loginRouter.post('/', passport.authenticate('local'), (req, res) => {
     res.status(200).send(`Hello ${req.user.firstname}`);
 })
 
+
+
 module.exports =  loginRouter;

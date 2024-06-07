@@ -9,6 +9,7 @@ const checkoutRouter = require('./Routes/checkout');
 const cartRouter = require('./Routes/cart');
 const loginRouter = require('./Routes/login');
 const registrationRouter = require('./Routes/registration');
+const logoutRouter = require('./Routes/logout');
 const session = require('express-session');
 const passport = require('passport');
 const localStrategy = require("./local-strategy");
@@ -44,10 +45,12 @@ app.use('/checkout', checkoutRouter);
 app.use('/cart', cartRouter);
 app.use('/login', loginRouter);
 app.use('/registration', registrationRouter);
+app.use('/logout', logoutRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello World');
 });
+
 
 
 
