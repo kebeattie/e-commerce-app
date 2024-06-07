@@ -112,7 +112,7 @@ const getProducts = (req, res) => {
     })
 
 }
-
+//Return products of a certain category
 const getProductsByCategory = async(category) => {
     try {
         const result = await pool.query('SELECT * FROM products WHERE category = $1', [category]);
@@ -126,5 +126,26 @@ const getProductsByCategory = async(category) => {
     }
 }
 
+//Get a user's cart
+const getCart = async (req, res) => {
 
-module.exports = { getUsers, createUser, findByEmail, changePassword, getProducts, getProductsByCategory };
+    const {email} = req.body;
+    const user = await findByEmail(email);
+    if(user === null) {res.send('User not found')}
+    else {
+        const cartId = user.cart_id;
+        pool.query(
+        'SELECT * FROM cart_item WHERE cart_id = $1',
+        [cartId], (error, results) => {
+            if(error) {
+                console.log(error);
+            }
+            res.send(results.rows);
+        }
+    )
+    }
+    
+}
+
+
+module.exports = { getUsers, createUser, findByEmail, changePassword, getProducts, getProductsByCategory, getCart };
