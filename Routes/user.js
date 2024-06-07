@@ -27,7 +27,6 @@ userRouter.get('/:email', async (req, res, next) => {
 //Allow a user to change their password
 userRouter.post('/changepassword', async (req, res, next) => {
     const {email, password} = req.body;
-    console.log(password);
     try {
         const changedPassword = await db.changePassword(email, password);
         console.log('success');

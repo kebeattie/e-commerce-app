@@ -147,5 +147,36 @@ const getCart = async (req, res) => {
     
 }
 
+//Find product by Id
+const findProductById = async(id) => {
+   const result = await pool.query('SELECT * FROM PRODUCTS WHERE id = $1', [id]);
+   return result.rows[0];
+}
 
-module.exports = { getUsers, createUser, findByEmail, changePassword, getProducts, getProductsByCategory, getCart };
+//Add item to cart
+const addToCart = async (id, quantity, email) => {
+    const user = await findByEmail(email);
+    const cartId = user.cart_id;
+    const cartItemId = generateUserId();
+    const product = await findProductById(id);
+    const productId = product.id;
+    const price = product.price;
+
+    
+
+    
+    
+    await pool.query(
+        'INSERT INTO cart_item VALUES ($1, $2, $3, $4, $5)', 
+        [cartItemId, productId, quantity, cartId, price], (error, results) => {
+            if (error) {
+                console.log(error);
+                return(null)}
+            else {return true};
+        }
+    )
+
+    
+}
+
+module.exports = { getUsers, createUser, findByEmail, changePassword, getProducts, getProductsByCategory, getCart, addToCart };
