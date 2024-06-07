@@ -89,8 +89,31 @@ const changePassword = async (email, newPassword) => {
     } else {
         return(null);
     }
+}
 
+//Return all products
+
+const getProducts = (req, res) => {
+    pool.query('SELECT * FROM products', (error, results) => {
+        if (error) {
+            console.log(error)
+        }
+        res.status(200).json(results.rows);
+    })
 
 }
 
-module.exports = { getUsers, createUser, findByEmail, changePassword };
+const getProductsByCategory = async(category) => {
+    try {
+        const result = await pool.query('SELECT * FROM products WHERE category = $1', [category]);
+        if (result.rows?.length) {
+         return await result.rows;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+module.exports = { getUsers, createUser, findByEmail, changePassword, getProducts, getProductsByCategory };

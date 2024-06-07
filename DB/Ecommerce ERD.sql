@@ -29,7 +29,9 @@ CREATE TABLE "products" (
   "id" integer PRIMARY KEY,
   "price" integer,
   "name" varchar,
-  "description" varchar
+  "description" varchar,
+    "category" varchar
+    
 );
 
 CREATE TABLE "cart_item" (
@@ -48,8 +50,8 @@ ALTER TABLE "orders" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "order_item" ADD FOREIGN KEY ("order_id") REFERENCES "orders" ("id");
 
-ALTER TABLE "products" ADD FOREIGN KEY ("id") REFERENCES "order_item" ("product_id");
+ALTER TABLE "order_item" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
 
-ALTER TABLE "products" ADD FOREIGN KEY ("id") REFERENCES "cart_item" ("product_id");
+ALTER TABLE "cart_item" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
 
 ALTER TABLE "cart_item" ADD FOREIGN KEY ("cart_id") REFERENCES "cart" ("id");
