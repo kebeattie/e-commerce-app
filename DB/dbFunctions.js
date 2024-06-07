@@ -42,7 +42,7 @@ const findByEmail = async (email) => {
 //Create a new user and store them in the DB
 const createUser = async (req, res) => {
 
-    const { password, email, firstname, lastname } = req.body;
+    const { password, email, firstname, lastname} = req.body;
     const existingUser = await findByEmail(email);
     if (existingUser == null) {
 
@@ -51,9 +51,19 @@ const createUser = async (req, res) => {
         const hashedPassword = await bCrypt.hash(password, await salt);
 
         const id = generateUserId();
+        const cartId = generateUserId();
+
         pool.query(
-            'INSERT INTO users (id, password, email, firstname, lastname, created_at, modified_at) VALUES ($1, $2, $3, $4, $5, current_timestamp, current_timestamp)',
-            [id, hashedPassword, email, firstname, lastname], (error, results) => {
+            'INSERT INTO cart VALUES ($1)',
+            [cartId], (error, results) => {
+                if (error) {
+                    console.log(error);
+                }
+            }
+        )
+        pool.query(
+            'INSERT INTO users (id, password, email, firstname, lastname, created_at, modified_at, cart_id) VALUES ($1, $2, $3, $4, $5, current_timestamp, current_timestamp, $6)',
+            [id, hashedPassword, email, firstname, lastname, cartId], (error, results) => {
                 if (error) {
                     console.log(error);
                 }
@@ -115,5 +125,6 @@ const getProductsByCategory = async(category) => {
         console.log(error);
     }
 }
+
 
 module.exports = { getUsers, createUser, findByEmail, changePassword, getProducts, getProductsByCategory };

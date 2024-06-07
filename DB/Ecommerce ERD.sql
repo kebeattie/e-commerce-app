@@ -5,7 +5,8 @@ CREATE TABLE "users" (
   "firstname" varchar,
   "lastname" varchar,
   "created_at" timestamp,
-  "modified_at" timestamp
+  "modified_at" timestamp,
+    "cart_id" integer REFERENCES cart(id)
 );
 
 CREATE TABLE "orders" (
