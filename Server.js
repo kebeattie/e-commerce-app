@@ -12,8 +12,7 @@ const registrationRouter = require('./Routes/registration');
 const logoutRouter = require('./Routes/logout');
 const session = require('express-session');
 const passport = require('passport');
-const localStrategy = require("./local-strategy");
-const port = process.env.port || 4001;
+const port = process.env.PORT || 4001;
 
 app.use(bodyParser.json());
 app.use (
