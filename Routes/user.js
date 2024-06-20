@@ -14,7 +14,7 @@ userRouter.get('/:email', async (req, res, next) => {
 
         if(!user) {throw new Error ('User not found')};
         //Return user's name if found
-        res.status(200).send(`Name: ${user.firstname} ${user.lastname}`)
+        res.status(200).send(`{"name" : "${user.firstname} ${user.lastname}"}`)
 
     } catch(err) {
         //Redirect to home page if not found
@@ -36,7 +36,6 @@ userRouter.post('/changepassword', async (req, res, next) => {
         res.redirect('/');
     }
 });
-
 
 
 
